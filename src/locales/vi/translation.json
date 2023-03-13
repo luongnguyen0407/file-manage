@@ -1,0 +1,7 @@
+{
+  "email.invalidFormat": "Định dạng email không đúng",
+  "email.required": "Bạn chưa nhập email",
+  "password.short": "Mật khẩu quá ngắn ( > 8)",
+  "password.long": "Mật khẩu quá dài",
+  "password.required": "Bạn chưa nhập mật khẩu"
+}

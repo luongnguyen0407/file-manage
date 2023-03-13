@@ -15,7 +15,7 @@ export type MyContextValue = {
   setUserInfo: React.Dispatch<React.SetStateAction<userInfoType>>;
 };
 const AuthContext = createContext<MyContextValue | null>(null);
-const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
+const AuthProvider = ({ children }: AuthProviderProps) => {
   const [userInfo, setUserInfo] = useState<userInfoType>();
   const value = { userInfo, setUserInfo };
   useEffect(() => {

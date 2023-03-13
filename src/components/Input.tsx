@@ -5,7 +5,7 @@ import {
   Control,
   FieldErrors,
 } from "react-hook-form";
-import { FormValue } from "../pages/Login";
+import { FormValue } from "../pages/Login/LoginContainer";
 
 interface InputProps {
   placeholder: string;
@@ -14,13 +14,13 @@ interface InputProps {
   name: "email" | "password";
   errors: FieldErrors<FieldValues>;
 }
-const Input: React.FC<InputProps> = ({
+const Input = ({
   placeholder,
   type = "text",
   control,
   name,
   errors,
-}) => {
+}: InputProps) => {
   const { field } = useController({
     control,
     name,

@@ -1,6 +1,6 @@
 import axios, { AxiosResponse } from "axios";
 const axiosApi = axios.create({
-  baseURL: "https://reqres.in/api",
+  baseURL: import.meta.env.VITE_APP_BASE_API,
   headers: { "Content-type": "application/json" },
 });
 
