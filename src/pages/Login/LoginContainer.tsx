@@ -2,18 +2,16 @@ import Heading from "../../components/Heading";
 import * as yup from "yup";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { useContext } from "react";
+import { lazy, useContext } from "react";
 import { toast } from "react-toastify";
 import axiosApi from "../../axios/axiosApi";
-import { MyContextValue, AuthContext } from "../../context/auth-context";
+import { AuthContext } from "../../context/auth-context";
 import { useNavigate } from "react-router-dom";
 import { API, PAGE } from "../../config/constants";
 import { useTranslation } from "react-i18next";
-import Login from "./Login";
-export type FormValue = {
-  email: string;
-  password: string;
-};
+import { FormLoginValue } from "../../models/AuthType";
+import { MyContextValue } from "../../models/ContextType";
+const Login = lazy(() => import("./Login"));
 const LoginContainer = () => {
   const { t } = useTranslation();
   const { setUserInfo } = useContext(AuthContext) as MyContextValue;
@@ -33,12 +31,12 @@ const LoginContainer = () => {
     handleSubmit,
     formState: { errors },
     control,
-  } = useForm<FormValue>({
+  } = useForm<FormLoginValue>({
     resolver: yupResolver(schema),
     mode: "onSubmit",
   });
 
-  const handleSubmitLogin = async (data: FormValue) => {
+  const handleSubmitLogin = async (data: FormLoginValue) => {
     try {
       const res = await axiosApi.post(API.LOGIN, data);
       setUserInfo(res.data);

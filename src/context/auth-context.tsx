@@ -1,18 +1,7 @@
 import { createContext, useEffect, useState } from "react";
+import { MyContextValue, userInfoType } from "../models/ContextType";
 type AuthProviderProps = {
   children: React.ReactNode;
-};
-type userInfoType =
-  | {
-      accessToken: string;
-      id: string;
-      isAdmin: boolean;
-      username: string;
-    }
-  | undefined;
-export type MyContextValue = {
-  userInfo: userInfoType;
-  setUserInfo: React.Dispatch<React.SetStateAction<userInfoType>>;
 };
 const AuthContext = createContext<MyContextValue | null>(null);
 const AuthProvider = ({ children }: AuthProviderProps) => {

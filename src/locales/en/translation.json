@@ -1,7 +1,11 @@
 {
-  "email.invalidFormat": "Invalid email format",
-  "email.required": "Please enter your email",
-  "password.short": "Password too short ( > 8)",
-  "password.long": "Password too long",
-  "password.required": "Please enter your password"
+  "email": {
+    "invalidFormat": "Invalid email format",
+    "required": "Please enter your email"
+  },
+  "password": {
+    "short": "Password too short ( > 8)",
+    "long": "Password too long",
+    "required": "Please enter your password"
+  }
 }

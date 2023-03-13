@@ -5,12 +5,11 @@ import {
   Control,
   FieldErrors,
 } from "react-hook-form";
-import { FormValue } from "../pages/Login/LoginContainer";
-
+import { FormLoginValue } from "../models/AuthType";
 interface InputProps {
   placeholder: string;
   type?: string;
-  control: Control<FormValue> | undefined;
+  control: Control<FormLoginValue> | undefined;
   name: "email" | "password";
   errors: FieldErrors<FieldValues>;
 }

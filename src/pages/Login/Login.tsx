@@ -2,9 +2,9 @@ import Button from "../../components/Button";
 import Input from "../../components/Input";
 import OneField from "../../components/OneField";
 import { FieldValues, Control, FieldErrors } from "react-hook-form";
-import { FormValue } from "./LoginContainer";
+import { FormLoginValue } from "../../models/AuthType";
 interface InputProps {
-  control: Control<FormValue> | undefined;
+  control: Control<FormLoginValue> | undefined;
   errors: FieldErrors<FieldValues>;
 }
 const Login = ({ control, errors }: InputProps) => {
