@@ -1,16 +1,16 @@
+import Heading from "../../components/Heading";
+import axiosApi from "../../axios/axiosApi";
+import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { lazy, useContext } from "react";
-import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
+import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
-import * as yup from "yup";
-import axiosApi from "../../axios/axiosApi";
-import Heading from "../../components/Heading";
-import { API, PAGE } from "../../config/constants";
-import { AuthContext } from "../../context/auth-context";
-import { FormLoginValue } from "../../models/AuthType";
 import { MyContextValue } from "../../models/ContextType";
+import { lazy, useContext } from "react";
+import { FormLoginValue } from "../../models/AuthType";
+import { AuthContext } from "../../context/auth-context";
+import { API, PAGE } from "../../config/constants";
 const Login = lazy(() => import("./Login"));
 const LoginContainer = () => {
   const { t } = useTranslation();

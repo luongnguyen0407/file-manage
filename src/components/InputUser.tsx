@@ -1,15 +1,14 @@
 import { ReactNode } from "react";
-import { useController } from "react-hook-form";
-import { FormLoginValue } from "../models/AuthType";
 import { InputProps } from "../models/InputType";
 import { User } from "../models/User";
-const Input = ({
+import { useController } from "react-hook-form";
+const InputUser = ({
   placeholder,
   type = "text",
   control,
   name,
   errors,
-}: InputProps<FormLoginValue>) => {
+}: InputProps<User>) => {
   const { field } = useController({
     control,
     name,
@@ -19,7 +18,7 @@ const Input = ({
     <>
       <input
         {...field}
-        className={`border border-gray-400 rounded-sm p-2 outline-none ${
+        className={`border border-gray-400 p-2 rounded-md w-full ${
           !!errors[name] ? "border-red-400" : ""
         }`}
         placeholder={placeholder}
@@ -34,4 +33,4 @@ const Input = ({
   );
 };
 
-export default Input;
+export default InputUser;
