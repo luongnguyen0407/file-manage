@@ -1,13 +1,7 @@
-import { Control, FieldErrors, FieldValues } from "react-hook-form";
 import Button from "../../components/Button";
-import InputUser from "../../components/InputUser";
+import InputValidate from "../../components/InputValidate";
 import OneField from "../../components/OneField";
-import { User } from "../../models/User";
-interface updateProps {
-  control: Control<User> | undefined;
-  errors: FieldErrors<FieldValues>;
-}
-const Update = ({ control, errors }: updateProps) => {
+const Update = () => {
   return (
     <>
       <OneField>
@@ -17,12 +11,7 @@ const Update = ({ control, errors }: updateProps) => {
         >
           First Name
         </label>
-        <InputUser
-          errors={errors}
-          control={control}
-          name="first_name"
-          placeholder="First Name"
-        />
+        <InputValidate name="first_name" placeholder="First Name" />
       </OneField>
       <OneField>
         <label
@@ -31,24 +20,13 @@ const Update = ({ control, errors }: updateProps) => {
         >
           Last Name
         </label>
-        <InputUser
-          errors={errors}
-          control={control}
-          name="last_name"
-          placeholder="Last Name"
-        />
+        <InputValidate name="last_name" placeholder="Last Name" />
       </OneField>
       <OneField>
         <label htmlFor="email" className="block text-gray-700 font-bold mb-2">
           Email
         </label>
-        <InputUser
-          errors={errors}
-          control={control}
-          name="email"
-          type="email"
-          placeholder="Email"
-        />
+        <InputValidate name="email" type="email" placeholder="Email" />
       </OneField>
       <Button>Save Changes</Button>
     </>

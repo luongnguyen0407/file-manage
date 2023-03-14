@@ -1,6 +1,6 @@
 export type userInfoType =
   | {
-      token: "QpwL5tke4Pnpja7X4";
+      token: string;
     }
   | undefined;
 export type MyContextValue = {

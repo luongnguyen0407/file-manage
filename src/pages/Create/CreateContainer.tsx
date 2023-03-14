@@ -2,11 +2,11 @@ import axiosApi from "../../axios/axiosApi";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useTranslation } from "react-i18next";
-import { User } from "../../models/User";
-import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import { lazy, useCallback } from "react";
 import { API } from "../../config/constants";
+import { useForm, FormProvider } from "react-hook-form";
+import { FieldValues } from "react-hook-form/dist/types";
 const Create = lazy(() => import("./Create"));
 
 const CreateContainer = () => {
@@ -19,15 +19,12 @@ const CreateContainer = () => {
     first_name: yup.string().required(t("first_name.required") as string),
     last_name: yup.string().required(t("last_name.required") as string),
   });
-  const {
-    handleSubmit,
-    formState: { errors },
-    control,
-  } = useForm<User>({
+  const methods = useForm({
     resolver: yupResolver(schema),
     mode: "onSubmit",
   });
-  const handleCreate = useCallback(async (data: User) => {
+  console.log("methods: ", methods);
+  const handleCreate = useCallback(async (data: FieldValues) => {
     try {
       const res = await axiosApi.post(`${API.CREATE_USER}`, data);
       console.log("res: ", res);
@@ -39,12 +36,14 @@ const CreateContainer = () => {
   }, []);
   return (
     <div>
-      <form
-        onSubmit={handleSubmit(handleCreate)}
-        className=" bg-white p-6 rounded-lg shadow-md"
-      >
-        <Create errors={errors} control={control}></Create>
-      </form>
+      <FormProvider {...methods}>
+        <form
+          onSubmit={methods.handleSubmit(handleCreate)}
+          className=" bg-white p-6 rounded-lg shadow-md"
+        >
+          <Create></Create>
+        </form>
+      </FormProvider>
     </div>
   );
 };

@@ -1,34 +1,16 @@
 import OneField from "../../components/OneField";
-import Input from "../../components/Input";
 import Button from "../../components/Button";
-import { Control, FieldErrors, FieldValues } from "react-hook-form";
-import { FormLoginValue } from "../../models/AuthType";
-interface LoginProps {
-  control: Control<FormLoginValue> | undefined;
-  errors: FieldErrors<FieldValues>;
-}
-const Login = ({ control, errors }: LoginProps) => {
+import InputValidate from "../../components/InputValidate";
+const Login = () => {
   return (
     <>
       <OneField>
         <label htmlFor="">Email</label>
-        <Input
-          name="email"
-          type="email"
-          control={control}
-          placeholder="email"
-          errors={errors}
-        />
+        <InputValidate name="email" placeholder="Email" />
       </OneField>
       <OneField>
         <label htmlFor="">Password</label>
-        <Input
-          name="password"
-          control={control}
-          placeholder="password"
-          type="password"
-          errors={errors}
-        />
+        <InputValidate name="password" placeholder="password" type="password" />
       </OneField>
       <Button>Login</Button>
     </>
