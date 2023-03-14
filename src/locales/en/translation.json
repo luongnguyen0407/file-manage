@@ -1,0 +1,11 @@
+{
+  "email": {
+    "invalidFormat": "Invalid email format",
+    "required": "Please enter your email"
+  },
+  "password": {
+    "short": "Password too short ( > 8)",
+    "long": "Password too long",
+    "required": "Please enter your password"
+  }
+}
