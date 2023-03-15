@@ -11,12 +11,12 @@ import { MyContextValue } from "../../models/ContextType";
 import { lazy, useContext } from "react";
 import { FieldValues } from "react-hook-form/dist/types";
 import { AuthContext } from "../../context/auth-context";
-import { API, PAGE } from "../../config/constants";
+import { API, LOCAL_STORAGE_KEY, PAGE } from "../../config/constants";
 const Login = lazy(() => import("./Login"));
 const LoginContainer = () => {
   const { t } = useTranslation();
   const { setUserInfo } = useContext(AuthContext) as MyContextValue;
-  const [, setToken] = useLocalStorage<string>("token", "");
+  const [, setToken] = useLocalStorage<string>(LOCAL_STORAGE_KEY.TOKEN, "");
   const navigate = useNavigate();
   const schema = yup.object({
     email: yup

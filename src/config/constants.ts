@@ -12,3 +12,6 @@ export const API = {
   UPDATE_USER: "/users",
   CREATE_USER: "/users",
 };
+export const LOCAL_STORAGE_KEY = {
+  TOKEN: "token",
+};
