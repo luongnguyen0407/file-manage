@@ -1,35 +1,24 @@
 import { ReactNode } from "react";
-import {
-  useController,
-  FieldValues,
-  Control,
-  FieldErrors,
-} from "react-hook-form";
-import { FormLoginValue } from "../models/AuthType";
+import { useController, useFormContext } from "react-hook-form";
 interface InputProps {
   placeholder: string;
   type?: string;
-  control: Control<FormLoginValue> | undefined;
-  name: "email" | "password";
-  errors: FieldErrors<FieldValues>;
+  name: string;
 }
-const Input = ({
-  placeholder,
-  type = "text",
-  control,
-  name,
-  errors,
-}: InputProps) => {
+
+const InputValidate = ({ placeholder, type = "text", name }: InputProps) => {
+  const { formState, control } = useFormContext();
+  const { errors } = formState;
   const { field } = useController({
-    control,
     name,
+    control,
     defaultValue: "",
   });
   return (
     <>
       <input
         {...field}
-        className={`border border-gray-400 rounded-sm p-2 outline-none ${
+        className={`border border-gray-400 p-2 rounded-md w-full outline-none ${
           !!errors[name] ? "border-red-400" : ""
         }`}
         placeholder={placeholder}
@@ -44,4 +33,4 @@ const Input = ({
   );
 };
 
-export default Input;
+export default InputValidate;

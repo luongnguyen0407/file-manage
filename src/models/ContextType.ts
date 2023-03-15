@@ -1,9 +1,6 @@
 export type userInfoType =
   | {
-      accessToken: string;
-      id: string;
-      isAdmin: boolean;
-      username: string;
+      token: string;
     }
   | undefined;
 export type MyContextValue = {

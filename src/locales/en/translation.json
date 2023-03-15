@@ -3,6 +3,12 @@
     "invalidFormat": "Invalid email format",
     "required": "Please enter your email"
   },
+  "first_name": {
+    "required": "Please enter your first name"
+  },
+  "last_name": {
+    "required": "Please enter your last name"
+  },
   "password": {
     "short": "Password too short ( > 8)",
     "long": "Password too long",
