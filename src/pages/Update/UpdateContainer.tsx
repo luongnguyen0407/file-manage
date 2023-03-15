@@ -26,12 +26,13 @@ const UpdateContainer = () => {
     resolver: yupResolver(schema),
     mode: "onSubmit",
   });
+  const { reset, handleSubmit } = methods;
   useEffect(() => {
     if (!id) navigate(PAGE.HOME);
     (async () => {
       try {
         const { data } = await axiosApi.get(`${API.SINGLE_USER}/${id}`);
-        methods.reset(data.data);
+        reset(data.data);
       } catch (error) {
         console.log("error: ", error);
         toast.error("Error");
@@ -51,7 +52,7 @@ const UpdateContainer = () => {
     <div>
       <FormProvider {...methods}>
         <form
-          onSubmit={methods.handleSubmit(handleUpdate)}
+          onSubmit={handleSubmit(handleUpdate)}
           className=" bg-white p-6 rounded-lg shadow-md"
         >
           <Update></Update>

@@ -2,11 +2,11 @@ import axiosApi from "../../axios/axiosApi";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useTranslation } from "react-i18next";
+import { useForm, FormProvider } from "react-hook-form";
 import { toast } from "react-toastify";
 import { lazy, useCallback } from "react";
-import { API } from "../../config/constants";
-import { useForm, FormProvider } from "react-hook-form";
 import { FieldValues } from "react-hook-form/dist/types";
+import { API } from "../../config/constants";
 const Create = lazy(() => import("./Create"));
 
 const CreateContainer = () => {
@@ -23,7 +23,7 @@ const CreateContainer = () => {
     resolver: yupResolver(schema),
     mode: "onSubmit",
   });
-  console.log("methods: ", methods);
+  const { handleSubmit } = methods;
   const handleCreate = useCallback(async (data: FieldValues) => {
     try {
       const res = await axiosApi.post(`${API.CREATE_USER}`, data);
@@ -38,10 +38,10 @@ const CreateContainer = () => {
     <div>
       <FormProvider {...methods}>
         <form
-          onSubmit={methods.handleSubmit(handleCreate)}
+          onSubmit={handleSubmit(handleCreate)}
           className=" bg-white p-6 rounded-lg shadow-md"
         >
-          <Create></Create>
+          <Create />
         </form>
       </FormProvider>
     </div>

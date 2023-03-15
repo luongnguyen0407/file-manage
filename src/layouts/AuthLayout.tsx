@@ -1,11 +1,12 @@
-import { Outlet, useNavigate } from "react-router-dom";
 import Loading from "../components/Loading";
+import { useLocalStorage } from "../hooks/useLocalStorage";
 import { Suspense, useEffect } from "react";
 import { PAGE } from "../config/constants";
+import { Outlet, useNavigate } from "react-router-dom";
 const AuthLayout = () => {
   const navigate = useNavigate();
+  const [token] = useLocalStorage<string>("token", "");
   useEffect(() => {
-    const token = JSON.parse(localStorage.getItem("token") as string);
     if (token) {
       navigate(PAGE.HOME);
     }

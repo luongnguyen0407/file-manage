@@ -4,6 +4,7 @@ import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
+import { useLocalStorage } from "../../hooks/useLocalStorage";
 import { useForm, FormProvider } from "react-hook-form";
 import { toast } from "react-toastify";
 import { MyContextValue } from "../../models/ContextType";
@@ -15,6 +16,7 @@ const Login = lazy(() => import("./Login"));
 const LoginContainer = () => {
   const { t } = useTranslation();
   const { setUserInfo } = useContext(AuthContext) as MyContextValue;
+  const [, setToken] = useLocalStorage<string>("token", "");
   const navigate = useNavigate();
   const schema = yup.object({
     email: yup
@@ -31,12 +33,12 @@ const LoginContainer = () => {
     resolver: yupResolver(schema),
     mode: "onSubmit",
   });
-
+  const { handleSubmit } = methods;
   const handleSubmitLogin = async (data: FieldValues) => {
     try {
       const res = await axiosApi.post(API.LOGIN, data);
       setUserInfo(res.data);
-      localStorage.setItem("token", JSON.stringify(res.data.token));
+      setToken(res.data.token);
       toast.success("Logic success");
       navigate(PAGE.HOME);
     } catch (error) {
@@ -47,11 +49,8 @@ const LoginContainer = () => {
     <>
       <Heading>Login</Heading>
       <FormProvider {...methods}>
-        <form
-          onSubmit={methods.handleSubmit(handleSubmitLogin)}
-          className="mt-3"
-        >
-          <Login></Login>
+        <form onSubmit={handleSubmit(handleSubmitLogin)} className="mt-3">
+          <Login />
         </form>
       </FormProvider>
     </>
