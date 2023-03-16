@@ -6,7 +6,7 @@ const Update = () => {
     <>
       <OneField>
         <label
-          htmlFor="firstName"
+          htmlFor="first_name"
           className="block text-gray-700 font-bold mb-2"
         >
           First Name
@@ -15,7 +15,7 @@ const Update = () => {
       </OneField>
       <OneField>
         <label
-          htmlFor="lastName"
+          htmlFor="last_name"
           className="block text-gray-700 font-bold mb-2"
         >
           Last Name

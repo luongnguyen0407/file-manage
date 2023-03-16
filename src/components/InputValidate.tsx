@@ -23,6 +23,7 @@ const InputValidate = ({ placeholder, type = "text", name }: InputProps) => {
         }`}
         placeholder={placeholder}
         type={type}
+        id={name}
       />
       {!!errors[name] && (
         <p className="text-xs text-red-300">
