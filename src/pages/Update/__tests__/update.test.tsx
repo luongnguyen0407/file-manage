@@ -1,17 +1,30 @@
-import { render, screen, act } from "@testing-library/react";
+import {
+  render,
+  screen,
+  act,
+  fireEvent,
+  waitFor,
+  RenderOptions,
+} from "@testing-library/react";
 import "@testing-library/jest-dom";
 import { AuthContext } from "../../../context/auth-context";
 import userEvent from "@testing-library/user-event";
 import axiosApi from "../../../axios/axiosApi";
 import MockAdapter from "axios-mock-adapter";
 import UpdateContainer from "../UpdateContainer";
+import { toast } from "react-toastify";
+import { MemoryRouter, Route, Router, Routes } from "react-router-dom";
+import { Suspense } from "react";
+import HomeContainer from "../../Home/HomeContainer";
 const userInfo = { token: "abc" };
 const setUserInfo = jest.fn();
 const mockedUsedNavigate = jest.fn();
-
+const mockedToastSuccess = jest.spyOn(toast, "success");
+const mockedUsePrams = jest.fn();
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
   useNavigate: () => mockedUsedNavigate,
+  useParams: jest.fn(),
 }));
 
 jest.mock("react-i18next", () => ({
@@ -36,7 +49,26 @@ describe("UpdateForm", () => {
     await act(async () => {
       render(
         <AuthContext.Provider value={{ userInfo, setUserInfo }}>
-          <UpdateContainer />
+          <MemoryRouter initialEntries={["/update/1"]}>
+            <Routes>
+              <Route
+                path="/update/1"
+                element={
+                  <Suspense fallback={<h1>Loading...</h1>}>
+                    <UpdateContainer />
+                  </Suspense>
+                }
+              />
+              <Route
+                path="/"
+                element={
+                  <Suspense fallback={<h1>Loading...</h1>}>
+                    <HomeContainer />
+                  </Suspense>
+                }
+              />
+            </Routes>
+          </MemoryRouter>
         </AuthContext.Provider>
       );
     });
@@ -57,12 +89,28 @@ describe("UpdateForm", () => {
     expect(firstName).toBeInTheDocument();
   });
   it("should successfully update the user", async () => {
-    try {
-      const res = await axiosApi.put("/update", {
-        email: "eve.holt@reqres.in",
-        password: "cityslicka",
-      });
-      expect(res.status).toBe(200);
-    } catch (error) {}
+    const firstName = screen.getByLabelText("First Name");
+    const lastName = screen.getByLabelText("Last Name");
+    const email = screen.getByLabelText("Email");
+    const submitButton = screen.getByRole("button", { name: "Save Changes" });
+    fireEvent.change(email, { target: { value: "eve.holt@reqres.in" } });
+    fireEvent.change(lastName, { target: { value: "cityslicka_update" } });
+    fireEvent.change(firstName, { target: { value: "cityslicka_update" } });
+    const mockedUserInfo = {
+      email: "eve.holt@reqres.in",
+      last_name: "cityslicka_update",
+      first_name: "cityslicka_update",
+      updatedAt: "2023-03-16T09:00:40.617Z",
+    };
+    const data = {
+      email: "eve.holt@reqres.in",
+      last_name: "cityslicka_update",
+      first_name: "cityslicka_update",
+    };
+    fireEvent.click(submitButton);
+    await waitFor(() => {
+      mockAxios.onPut("/users/2", data).reply(200, mockedUserInfo);
+    });
+    expect(mockedToastSuccess).toHaveBeenCalledWith("Update success");
   });
 });

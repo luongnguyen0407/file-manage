@@ -1,14 +1,22 @@
-import { render, screen, act } from "@testing-library/react";
+import {
+  render,
+  screen,
+  act,
+  fireEvent,
+  waitFor,
+} from "@testing-library/react";
 import "@testing-library/jest-dom";
 import { AuthContext } from "../../../context/auth-context";
 import LoginContainer from "../LoginContainer";
 import userEvent from "@testing-library/user-event";
 import axiosApi from "../../../axios/axiosApi";
 import MockAdapter from "axios-mock-adapter";
+import { toast } from "react-toastify";
 const userInfo = { token: "abc" };
 const setUserInfo = jest.fn();
 const mockedUsedNavigate = jest.fn();
-
+const mockedToastSuccess = jest.spyOn(toast, "success");
+const mockedToastError = jest.spyOn(toast, "error");
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
   useNavigate: () => mockedUsedNavigate,
@@ -60,10 +68,44 @@ describe("LoginForm", () => {
     expect(emailError).toBeInTheDocument();
   });
   it("should successfully log in the user", async () => {
-    const res = await axiosApi.post("/login", {
+    const emailInput = screen.getByLabelText("Email");
+    const passwordInput = screen.getByLabelText("Password");
+    const submitButton = screen.getByRole("button", { name: "Login" });
+    fireEvent.change(emailInput, { target: { value: "eve.holt@reqres.in" } });
+    fireEvent.change(passwordInput, { target: { value: "cityslicka" } });
+    const mockedUserInfo = {
+      id: 1,
+      name: "John Doe",
+      email: "johndoe@example.com",
+      token: "abcxyz",
+    };
+    const data = {
       email: "eve.holt@reqres.in",
       password: "cityslicka",
+    };
+    fireEvent.click(submitButton);
+    await waitFor(() => {
+      mockAxios.onPost("/login", data).reply(200, mockedUserInfo);
     });
-    expect(res.status).toBe(200);
+    expect(mockedToastSuccess).toHaveBeenCalledWith("Login success");
+  });
+  it("should failed log in the user", async () => {
+    const emailInput = screen.getByLabelText("Email");
+    const passwordInput = screen.getByLabelText("Password");
+    const submitButton = screen.getByRole("button", { name: "Login" });
+    fireEvent.change(emailInput, { target: { value: "eve.holt@reqresss.in" } });
+    fireEvent.change(passwordInput, { target: { value: "cityslicksssa" } });
+    const mockedUserInfo = {
+      error: "user not found",
+    };
+    const data = {
+      email: "eve.holt@reqresss.in",
+      password: "cityslicksssa",
+    };
+    fireEvent.click(submitButton);
+    await waitFor(() => {
+      mockAxios.onPost("/login", data).reply(400, mockedUserInfo);
+    });
+    expect(mockedToastError).toHaveBeenCalledWith("Error");
   });
 });

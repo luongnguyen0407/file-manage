@@ -39,7 +39,7 @@ const LoginContainer = () => {
       const res = await axiosApi.post(API.LOGIN, data);
       setUserInfo(res.data);
       setToken(res.data.token);
-      toast.success("Logic success");
+      toast.success("Login success");
       navigate(PAGE.HOME);
     } catch (error) {
       toast.error("Error");

@@ -1,6 +1,6 @@
 import axios, { AxiosResponse } from "axios";
 const axiosApi = axios.create({
-  baseURL: import.meta.env.VITE_APP_BASE_API,
+  baseURL: "https://reqres.in/api",
   headers: { "Content-type": "application/json" },
 });
 
@@ -11,6 +11,7 @@ axiosApi.interceptors.response.use(
     return response;
   },
   function (error) {
+    console.log("error: ", error);
     // Any status codes that falls outside the range of 2xx cause this function to trigger
     // Do something with response error
     console.log("error");

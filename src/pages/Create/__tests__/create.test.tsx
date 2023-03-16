@@ -1,9 +1,10 @@
-import { render, screen, act } from "@testing-library/react";
+import { render, screen, act, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import { AuthContext } from "../../../context/auth-context";
 import userEvent from "@testing-library/user-event";
 import axiosApi from "../../../axios/axiosApi";
 import CreateContainer from "../CreateContainer";
+import MockAdapter from "axios-mock-adapter/types";
 const userInfo = { token: "abc" };
 const setUserInfo = jest.fn();
 const mockedUsedNavigate = jest.fn();
@@ -21,6 +22,17 @@ jest.mock("react-i18next", () => ({
 }));
 
 describe("CreateForm", () => {
+  let mockAxios: MockAdapter;
+  beforeAll(() => {
+    mockAxios = new MockAdapter(axiosApi);
+  });
+  afterEach(() => {
+    mockAxios.reset();
+  });
+
+  afterAll(() => {
+    mockAxios.restore();
+  });
   beforeEach(async () => {
     await act(async () => {
       render(
@@ -46,10 +58,11 @@ describe("CreateForm", () => {
     expect(firstName).toBeInTheDocument();
   });
   it("should successfully create the user", async () => {
-    const res = await axiosApi.post("/users", {
-      name: "morpheus",
-      job: "leader",
-    });
-    expect(res.status).toBe(201);
+    const emailInput = screen.getByLabelText("Email");
+    const firstName = screen.getByLabelText("First Name");
+    const lastName = screen.getByLabelText("Last Name");
+    const submitButton = screen.getByRole("button", { name: "Create" });
+    fireEvent.change(emailInput, { target: { value: "eve.holt@reqresss.in" } });
+    fireEvent.change(passwordInput, { target: { value: "cityslicksssa" } });
   });
 });
