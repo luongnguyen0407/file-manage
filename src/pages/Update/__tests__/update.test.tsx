@@ -4,7 +4,6 @@ import {
   act,
   fireEvent,
   waitFor,
-  RenderOptions,
 } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import { AuthContext } from "../../../context/auth-context";
@@ -13,26 +12,25 @@ import axiosApi from "../../../axios/axiosApi";
 import MockAdapter from "axios-mock-adapter";
 import UpdateContainer from "../UpdateContainer";
 import { toast } from "react-toastify";
-import { MemoryRouter, Route, Router, Routes } from "react-router-dom";
-import { Suspense } from "react";
-import HomeContainer from "../../Home/HomeContainer";
 const userInfo = { token: "abc" };
 const setUserInfo = jest.fn();
 const mockedUsedNavigate = jest.fn();
 const mockedToastSuccess = jest.spyOn(toast, "success");
-const mockedUsePrams = jest.fn();
+const mockedToastError = jest.spyOn(toast, "error");
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
   useNavigate: () => mockedUsedNavigate,
-  useParams: jest.fn(),
+  useParams: () => ({
+    id: "3",
+  }),
 }));
-
 jest.mock("react-i18next", () => ({
   useTranslation: () => ({
     t: jest.fn(),
     i18n: { changeLanguage: jest.fn() },
   }),
 }));
+
 describe("UpdateForm", () => {
   let mockAxios: MockAdapter;
   beforeAll(() => {
@@ -49,26 +47,7 @@ describe("UpdateForm", () => {
     await act(async () => {
       render(
         <AuthContext.Provider value={{ userInfo, setUserInfo }}>
-          <MemoryRouter initialEntries={["/update/1"]}>
-            <Routes>
-              <Route
-                path="/update/1"
-                element={
-                  <Suspense fallback={<h1>Loading...</h1>}>
-                    <UpdateContainer />
-                  </Suspense>
-                }
-              />
-              <Route
-                path="/"
-                element={
-                  <Suspense fallback={<h1>Loading...</h1>}>
-                    <HomeContainer />
-                  </Suspense>
-                }
-              />
-            </Routes>
-          </MemoryRouter>
+          <UpdateContainer />
         </AuthContext.Provider>
       );
     });
@@ -77,6 +56,10 @@ describe("UpdateForm", () => {
     expect(screen.getByLabelText("Email")).toBeInTheDocument();
     expect(screen.getByLabelText("First Name")).toBeInTheDocument();
     expect(screen.getByLabelText("Last Name")).toBeInTheDocument();
+  });
+  test("should call axios.get old data with the correct id", async () => {
+    mockAxios.onGet("/users/3").reply(400, { message: "error" });
+    expect(mockedToastError).toHaveBeenCalledWith("Error");
   });
   it("displays error messages when inputs are empty", async () => {
     const loginButton = screen.getByRole("button", { name: "Save Changes" });
@@ -109,8 +92,22 @@ describe("UpdateForm", () => {
     };
     fireEvent.click(submitButton);
     await waitFor(() => {
-      mockAxios.onPut("/users/2", data).reply(200, mockedUserInfo);
+      mockAxios.onPut("/users/3", data).reply(200, mockedUserInfo);
     });
     expect(mockedToastSuccess).toHaveBeenCalledWith("Update success");
+  });
+  it("should navigate to homepage when there is no id parameter", async () => {
+    const useParamsMock = jest.spyOn(require("react-router-dom"), "useParams");
+    useParamsMock.mockReturnValue({ id: null });
+
+    await act(async () => {
+      render(
+        <AuthContext.Provider value={{ userInfo, setUserInfo }}>
+          <UpdateContainer />
+        </AuthContext.Provider>
+      );
+    });
+
+    expect(mockedUsedNavigate).toHaveBeenCalledWith("/");
   });
 });
