@@ -13,7 +13,7 @@ const HomeContainer = () => {
         const { data } = await axiosApi.get(API.LIST_USER);
         setUsers(data.data);
       } catch (error) {
-        console.log(error);
+        console.log("error", error);
       }
     })();
   }, []);
