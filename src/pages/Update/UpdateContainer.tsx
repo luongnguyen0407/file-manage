@@ -34,19 +34,13 @@ const UpdateContainer = () => {
         const { data } = await axiosApi.get(`${API.SINGLE_USER}/${id}`);
         reset(data.data);
       } catch (error) {
-        console.log("error: ", error);
         toast.error("Error");
       }
     })();
   }, [id]);
   const handleUpdate = useCallback(async (data: FieldValues) => {
-    try {
-      await axiosApi.put(`${API.UPDATE_USER}/${id}`, data);
-      toast.success("Update success");
-    } catch (error) {
-      console.log("error: ", error);
-      toast.error("Error");
-    }
+    await axiosApi.put(`${API.UPDATE_USER}/${id}`, data);
+    toast.success("Update success");
   }, []);
   return (
     <div>

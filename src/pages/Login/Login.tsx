@@ -5,11 +5,11 @@ const Login = () => {
   return (
     <>
       <OneField>
-        <label htmlFor="">Email</label>
+        <label htmlFor="email">Email</label>
         <InputValidate name="email" placeholder="Email" />
       </OneField>
       <OneField>
-        <label htmlFor="">Password</label>
+        <label htmlFor="password">Password</label>
         <InputValidate name="password" placeholder="password" type="password" />
       </OneField>
       <Button>Login</Button>

@@ -7,19 +7,19 @@ import { toast } from "react-toastify";
 const Home = lazy(() => import("./Home"));
 const HomeContainer = () => {
   const [users, setUsers] = useState<User[]>([]);
+  const handleGetData = async () => {
+    try {
+      const { data } = await axiosApi.get(API.LIST_USER);
+      setUsers(data.data);
+    } catch (error) {
+      console.log("loi roi");
+    }
+  };
   useEffect(() => {
-    (async () => {
-      try {
-        const { data } = await axiosApi.get(API.LIST_USER);
-        setUsers(data.data);
-      } catch (error) {
-        console.log(error);
-      }
-    })();
+    handleGetData();
   }, []);
   const handleDeleteUser = useCallback(
     (id: number) => {
-      if (!id) return;
       Swal.fire({
         title: "Are you sure?",
         text: "You won't be able to revert this!",
@@ -33,7 +33,7 @@ const HomeContainer = () => {
             setUsers(newUsers);
             Swal.fire("Deleted!", "Your file has been deleted.", "success");
           } catch (error) {
-            console.log("error: ", error);
+            console.log("error1111: ", error);
             toast.error("Error");
           }
         }
@@ -42,7 +42,7 @@ const HomeContainer = () => {
     [users]
   );
   return (
-    <div className="flex justify-center mt-4">
+    <div className="flex justify-center mt-4 " data-testid="home-page">
       <Home users={users} handleDelete={handleDeleteUser} />
     </div>
   );

@@ -25,14 +25,8 @@ const CreateContainer = () => {
   });
   const { handleSubmit } = methods;
   const handleCreate = useCallback(async (data: FieldValues) => {
-    try {
-      const res = await axiosApi.post(`${API.CREATE_USER}`, data);
-      console.log("res: ", res);
-      toast.success("Create success");
-    } catch (error) {
-      console.log("error: ", error);
-      toast.error("Error");
-    }
+    await axiosApi.post(`${API.CREATE_USER}`, data);
+    toast.success("Create success");
   }, []);
   return (
     <div>

@@ -12,9 +12,14 @@ interface ListItemProps {
   onClick: () => void;
 }
 const Home = ({ users, handleDelete }: HomeProps) => {
+  console.log("data: ", users);
   return (
     <div className="overflow-x-auto">
-      <Link className="py-2 px-3 bg-cyan-400 rounded-sm " to={PAGE.CREATE}>
+      <Link
+        className="py-2 px-3 bg-cyan-400 rounded-sm "
+        to={PAGE.CREATE}
+        title="test"
+      >
         Create new user
       </Link>
       <table className="table-auto">
@@ -45,7 +50,7 @@ const Home = ({ users, handleDelete }: HomeProps) => {
 
 const ListItem = ({ user, onClick }: ListItemProps) => {
   return (
-    <tr>
+    <tr data-testid="list-item">
       <td className="border px-4 py-2">{user.id}</td>
       <td className="border px-4 py-2">{user.email}</td>
       <td className="border px-4 py-2">{user.first_name}</td>
@@ -55,7 +60,9 @@ const ListItem = ({ user, onClick }: ListItemProps) => {
       </td>
       <td className="border px-4 py-2 ">
         <div className="flex items-center justify-between">
-          <BsTrash3 onClick={onClick} className="cursor-pointer text-red-400" />
+          <button onClick={onClick} data-testid="delete-item">
+            <BsTrash3 className="cursor-pointer text-red-400" />
+          </button>
           <Link to={`${PAGE.UPDATE}/${user.id}`}>
             <TfiPencil className="cursor-pointer text-green-400" />
           </Link>
