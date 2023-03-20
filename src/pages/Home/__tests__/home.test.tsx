@@ -17,6 +17,17 @@ const userInfo = { token: "abc" };
 const setUserInfo = jest.fn();
 const mockedUsedNavigate = jest.fn();
 const mockedToastError = jest.spyOn(toast, "error");
+jest.mock("react", () => ({
+  ...jest.requireActual("react"),
+  useCallback: jest.fn((cb) => cb),
+}));
+jest.mock("react-router-dom", () => ({
+  ...jest.requireActual("react-router-dom"),
+  useNavigate: () => mockedUsedNavigate,
+  Link: ({ to, children }: { to: string; children: React.ReactNode }) => (
+    <a href={to}>{children}</a>
+  ),
+}));
 const data = {
   page: 2,
   per_page: 6,
@@ -32,15 +43,6 @@ const data = {
     },
   ],
 };
-
-jest.mock("react-router-dom", () => ({
-  ...jest.requireActual("react-router-dom"),
-  useNavigate: () => mockedUsedNavigate,
-  Link: ({ to, children }: { to: string; children: React.ReactNode }) => (
-    <a href={to}>{children}</a>
-  ),
-}));
-
 jest.mock("react-i18next", () => ({
   useTranslation: () => ({
     t: jest.fn(),
@@ -61,7 +63,7 @@ describe("CreateForm", () => {
     mockAxios.restore();
   });
   beforeEach(async () => {
-    mockAxios.onGet(API.LIST_USER, {}).reply(200, data);
+    mockAxios.onGet(API.LIST_USER).reply(200, data);
     await act(async () => {
       render(
         <AuthContext.Provider value={{ userInfo, setUserInfo }}>
@@ -79,7 +81,9 @@ describe("CreateForm", () => {
     const confirmOk = await screen.findByText("OK");
     fireEvent.click(confirmOk);
     mockAxios.onDelete(API.DELETE_USER + "/1").reply(204);
-    const confirmSuccess = await screen.findByText("Deleted!");
+    const confirmSuccess = await screen.findByText(
+      "Your file has been deleted."
+    );
     expect(confirmSuccess).toBeInTheDocument();
   });
 

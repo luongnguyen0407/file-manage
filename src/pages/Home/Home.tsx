@@ -12,9 +12,14 @@ interface ListItemProps {
   onClick: () => void;
 }
 const Home = ({ users, handleDelete }: HomeProps) => {
+  console.log("data: ", users);
   return (
     <div className="overflow-x-auto">
-      <Link className="py-2 px-3 bg-cyan-400 rounded-sm " to={PAGE.CREATE}>
+      <Link
+        className="py-2 px-3 bg-cyan-400 rounded-sm "
+        to={PAGE.CREATE}
+        title="test"
+      >
         Create new user
       </Link>
       <table className="table-auto">
@@ -45,7 +50,7 @@ const Home = ({ users, handleDelete }: HomeProps) => {
 
 const ListItem = ({ user, onClick }: ListItemProps) => {
   return (
-    <tr>
+    <tr data-testid="list-item">
       <td className="border px-4 py-2">{user.id}</td>
       <td className="border px-4 py-2">{user.email}</td>
       <td className="border px-4 py-2">{user.first_name}</td>

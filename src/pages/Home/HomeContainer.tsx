@@ -7,11 +7,16 @@ import { toast } from "react-toastify";
 const Home = lazy(() => import("./Home"));
 const HomeContainer = () => {
   const [users, setUsers] = useState<User[]>([]);
-  useEffect(() => {
-    (async () => {
+  const handleGetData = async () => {
+    try {
       const { data } = await axiosApi.get(API.LIST_USER);
       setUsers(data.data);
-    })();
+    } catch (error) {
+      console.log("loi roi");
+    }
+  };
+  useEffect(() => {
+    handleGetData();
   }, []);
   const handleDeleteUser = useCallback(
     (id: number) => {
