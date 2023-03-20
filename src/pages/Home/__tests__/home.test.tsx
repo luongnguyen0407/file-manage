@@ -16,12 +16,23 @@ import { API } from "../../../config/constants";
 const userInfo = { token: "abc" };
 const setUserInfo = jest.fn();
 const mockedUsedNavigate = jest.fn();
-const mockedToastSuccess = jest.spyOn(toast, "success");
-const mockSetState = jest.fn();
-jest.mock("react", () => ({
-  ...jest.requireActual("react"),
-  useState: (initialState: any) => [initialState, mockSetState],
-}));
+const mockedToastError = jest.spyOn(toast, "error");
+const data = {
+  page: 2,
+  per_page: 6,
+  total: 12,
+  total_pages: 2,
+  data: [
+    {
+      id: 1,
+      email: "michael.lawson@reqres.in",
+      first_name: "Michael",
+      last_name: "Lawson",
+      avatar: "https://reqres.in/img/faces/7-image.jpg",
+    },
+  ],
+};
+
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
   useNavigate: () => mockedUsedNavigate,
@@ -50,6 +61,7 @@ describe("CreateForm", () => {
     mockAxios.restore();
   });
   beforeEach(async () => {
+    mockAxios.onGet(API.LIST_USER, {}).reply(200, data);
     await act(async () => {
       render(
         <AuthContext.Provider value={{ userInfo, setUserInfo }}>
@@ -58,24 +70,29 @@ describe("CreateForm", () => {
       );
     });
   });
+
   it("should get list data user", async () => {
-    const setUsers = jest.fn();
-    const data = {
-      page: 2,
-      per_page: 6,
-      total: 12,
-      total_pages: 2,
-      data: [
-        {
-          id: 7,
-          email: "michael.lawson@reqres.in",
-          first_name: "Michael",
-          last_name: "Lawson",
-          avatar: "https://reqres.in/img/faces/7-image.jpg",
-        },
-      ],
-    };
-    mockAxios.onGet(API.LIST_USER, {}).reply(200, data);
-    expect(mockSetState).toHaveBeenCalledWith(data.data);
+    const btnTest = screen.getAllByTestId("delete-item");
+    fireEvent.click(btnTest[0]);
+    const confirm = await screen.findByText("Are you sure?");
+    expect(confirm).toBeInTheDocument();
+    const confirmOk = await screen.findByText("OK");
+    fireEvent.click(confirmOk);
+    mockAxios.onDelete(API.DELETE_USER + "/1").reply(204);
+    const confirmSuccess = await screen.findByText("Deleted!");
+    expect(confirmSuccess).toBeInTheDocument();
+  });
+
+  it("displays error messages when delete error", async () => {
+    const btnTest = screen.getAllByTestId("delete-item");
+    fireEvent.click(btnTest[0]);
+    const confirm = await screen.findByText("Are you sure?");
+    expect(confirm).toBeInTheDocument();
+    const confirmOk = await screen.findByText("OK");
+    fireEvent.click(confirmOk);
+    await waitFor(() => {
+      mockAxios.onDelete(API.DELETE_USER + "/5").reply(400);
+    });
+    expect(mockedToastError).toHaveBeenCalledWith("Error");
   });
 });

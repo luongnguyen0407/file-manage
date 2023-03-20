@@ -55,7 +55,9 @@ const ListItem = ({ user, onClick }: ListItemProps) => {
       </td>
       <td className="border px-4 py-2 ">
         <div className="flex items-center justify-between">
-          <BsTrash3 onClick={onClick} className="cursor-pointer text-red-400" />
+          <button onClick={onClick} data-testid="delete-item">
+            <BsTrash3 className="cursor-pointer text-red-400" />
+          </button>
           <Link to={`${PAGE.UPDATE}/${user.id}`}>
             <TfiPencil className="cursor-pointer text-green-400" />
           </Link>
