@@ -13,5 +13,10 @@
     "short": "Mật khẩu quá ngắn ( > 8)",
     "long": "Mật khẩu quá dài",
     "required": "Bạn chưa nhập mật khẩu"
+  },
+  "file": {
+    "delete_success": "Xóa file thành công",
+    "upload_success": "Tải file thành công",
+    "missing_file": "Vui lòng chọn file"
   }
 }

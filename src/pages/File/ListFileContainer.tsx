@@ -130,7 +130,7 @@ const ListFileContainer = () => {
           toast.error(t("server.error"));
         }
       } else {
-        toast.warning(t("server.missing_file"));
+        toast.warning(t("file.missing_file"));
       }
     },
     [selectedFile]
@@ -152,11 +152,11 @@ const ListFileContainer = () => {
         <InputSearch handleSearch={handleSearch} />
         <form onSubmit={(e) => handleUploadFile(e)}>
           <input type="file" onChange={(e) => handleChooseFile(e)} />
-          <Button type="submit">Upload</Button>
+          <Button>Upload</Button>
         </form>
         <select
           id="select-format"
-          className="text-primary"
+          className="text-primary outline-none"
           onChange={(e) => handleSortFormat(e)}
         >
           <option value="">All</option>
