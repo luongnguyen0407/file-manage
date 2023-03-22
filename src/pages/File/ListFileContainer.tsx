@@ -1,56 +1,52 @@
-import Button from "@components/Button";
-import InputSearch from "@components/InputSearch";
-import { File } from "@models/File";
-import { useCallback, useEffect, useRef, useState } from "react";
-import { toast } from "react-toastify";
 import Swal from "sweetalert2";
-import axiosFile from "../../axios/axiosFile";
-import { API } from "../../config/constants";
-import { useDebounce } from "../../hooks/useDebounce";
 import ListFile from "./ListFile";
+import InputSearch from "@components/InputSearch";
+import Button from "@components/Button";
+import axiosFile from "../../axios/axiosFile";
+import { useTranslation } from "react-i18next";
+import { useCallback, useEffect, useState } from "react";
+import { toast } from "react-toastify";
+import { File } from "@models/File";
+import { API, SORT_FILE } from "../../config/constants";
+import { useSort } from "../../hooks/useSort";
+import { handleDownloadFile } from "../../utils/handleDownloadFile";
+import { FileFormat } from "@models/FileFormat";
+import { usePaginate } from "../../hooks/usePaginate";
+import { useSearch } from "../../hooks/useSearch";
 
-type paginateInfoType = {
-  last_page: number;
-  limit: number;
-  total_file: number;
-  path: string;
-};
 const ListFileContainer = () => {
-  const [pageCount, setPageCount] = useState(0);
-  const [search, setSearch] = useState<string>("");
-  const [nextPage, setNextPage] = useState(1);
+  const [setSearch, delaySearch] = useSearch();
   const [file, setFile] = useState<File[]>([]);
-  const [itemOffset, setItemOffset] = useState(0);
-  const [paginateInfo, setPaginateInfo] = useState<paginateInfoType>();
+  const [listFileFormat, setListFileFormat] = useState<FileFormat[]>();
+  const [sortFormat, setSortFormat] = useState<number>();
   const [selectedFile, setSelectedFile] = useState<Blob>();
-  const debouncedSearch: string = useDebounce<string>(search, 1000);
+  const [sort, setSort, colSort, setColSort] = useSort<string>("");
+  const [handleSelectedPage, setPaginateInfo, pageCount, nextPage] =
+    usePaginate();
+  const { t } = useTranslation();
   //get file
   const handleGetFile = async () => {
     try {
       const res = await axiosFile.get(`${API.LIST_FILE}?page=${nextPage}`, {
         params: {
-          search: debouncedSearch,
+          search: delaySearch,
+          sort,
+          sort_by: colSort,
+          format_id: sortFormat,
         },
       });
       const { files, ...prev } = res.data;
       setFile(files);
       setPaginateInfo(prev);
     } catch (error) {
-      toast.error("Error");
+      toast.error(t("server.error"));
     }
   };
 
   //handle paginate
-  const handleChangePage = useCallback(
-    ({ selected }: { selected: number }): void => {
-      if (!paginateInfo) return;
-      const newOffset =
-        (selected * paginateInfo.limit) % paginateInfo.total_file;
-      setItemOffset(newOffset);
-      setNextPage(selected + 1);
-    },
-    [paginateInfo]
-  );
+  const handleChangePage = ({ selected }: { selected: number }) => {
+    handleSelectedPage(selected);
+  };
 
   const handleSearch = (event: React.ChangeEvent<EventTarget>) => {
     const target = event.target as HTMLInputElement;
@@ -63,39 +59,32 @@ const ListFileContainer = () => {
     }
   };
 
-  //calculator page
-  useEffect(() => {
-    if (!paginateInfo || !paginateInfo.total_file) return;
-    setPageCount(Math.ceil(paginateInfo.total_file / paginateInfo.limit));
-  }, [paginateInfo, itemOffset]);
-
-  //search when debounced change
   useEffect(() => {
     handleGetFile();
-  }, [debouncedSearch]);
+  }, [delaySearch, nextPage, sort, sortFormat]);
 
-  //get file when page change
   useEffect(() => {
-    handleGetFile();
-  }, [nextPage]);
+    (async () => {
+      try {
+        const res = await axiosFile.get(`${API.LIST_FORMAT}`);
+        setListFileFormat(res.data.file_format);
+      } catch (error) {
+        toast.error(t("server.error"));
+      }
+    })();
+  }, []);
 
   //download file
   const handleDowLoadFile = useCallback(async (file: File) => {
     if (!file) return;
-    const { file_name, id, format } = file;
+    const { id } = file;
     try {
       const res = await axiosFile.get(`${API.DOWN_FILE}/${id}`, {
         responseType: "blob",
       });
-      const url = window.URL.createObjectURL(new Blob([res.data]));
-      const link = document.createElement("a");
-      link.href = url;
-      link.setAttribute("download", `${file_name}.${format.toLowerCase()}`);
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
+      handleDownloadFile(res, file);
     } catch (error) {
-      toast.error("Error");
+      toast.error(t("server.error"));
     }
   }, []);
 
@@ -111,9 +100,9 @@ const ListFileContainer = () => {
         try {
           await axiosFile.delete(`${API.DELETE_FILE}/${id}`);
           handleGetFile();
-          toast.success("Delete Success");
+          toast.success(t("file.delete_success"));
         } catch (error) {
-          toast.error("Error");
+          toast.error(t("server.error"));
         }
       }
     });
@@ -134,19 +123,29 @@ const ListFileContainer = () => {
               "Content-Type": "multipart/form-data",
             },
           });
-          toast.success("Upload file Success");
+          toast.success(t("file.upload_success"));
           handleGetFile();
         } catch (error) {
           console.log("error: ", error);
-          toast.error("Error.");
+          toast.error(t("server.error"));
         }
       } else {
-        toast.warning("File missing");
+        toast.warning(t("server.missing_file"));
       }
     },
     [selectedFile]
   );
 
+  const handleSetSort = (colName: string) => {
+    setColSort(colName);
+    setSort((prev) =>
+      prev === SORT_FILE.DOWN ? SORT_FILE.UP : SORT_FILE.DOWN
+    );
+  };
+
+  const handleSortFormat = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setSortFormat(+e.target.value);
+  };
   return (
     <div className="bg-primary p-5">
       <div className="text-white flex items-center justify-between">
@@ -155,8 +154,24 @@ const ListFileContainer = () => {
           <input type="file" onChange={(e) => handleChooseFile(e)} />
           <Button type="submit">Upload</Button>
         </form>
+        <select
+          id="select-format"
+          className="text-primary"
+          onChange={(e) => handleSortFormat(e)}
+        >
+          <option value="">All</option>
+          {listFileFormat &&
+            listFileFormat.map((fileFormat) => (
+              <option key={fileFormat.id} value={fileFormat.id}>
+                {fileFormat.name}
+              </option>
+            ))}
+        </select>
       </div>
       <ListFile
+        handleSetSort={handleSetSort}
+        sort={sort}
+        colSort={colSort}
         pageCount={pageCount}
         handleChangePage={handleChangePage}
         handleDowLoadFile={handleDowLoadFile}

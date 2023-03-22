@@ -13,6 +13,7 @@ export const API = {
   UPDATE_USER: "/users",
   CREATE_USER: "/users",
   LIST_FILE: "/list-file",
+  LIST_FORMAT: "/list-format",
   DOWN_FILE: "/download",
   DELETE_FILE: "/delete",
   UPLOAD_FILE: "/upload",
@@ -30,4 +31,8 @@ export enum FORMAT_SIZE_FILE {
   EB,
   ZB,
   YB,
+}
+export enum SORT_FILE {
+  UP = "asc",
+  DOWN = "desc",
 }

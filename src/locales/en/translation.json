@@ -13,5 +13,13 @@
     "short": "Password too short ( > 8)",
     "long": "Password too long",
     "required": "Please enter your password"
+  },
+  "server": {
+    "error": "Server Error"
+  },
+  "file": {
+    "delete_success": "Delete Success",
+    "upload_success": "Upload Success",
+    "missing_file": "File missing"
   }
 }
