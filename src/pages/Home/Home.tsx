@@ -12,16 +12,24 @@ interface ListItemProps {
   onClick: () => void;
 }
 const Home = ({ users, handleDelete }: HomeProps) => {
-  console.log("data: ", users);
   return (
     <div className="overflow-x-auto">
-      <Link
-        className="py-2 px-3 bg-cyan-400 rounded-sm "
-        to={PAGE.CREATE}
-        title="test"
-      >
-        Create new user
-      </Link>
+      <div className="flex gap-x-4 my-2 items-center">
+        <Link
+          className="py-2 px-3 bg-cyan-400 rounded-sm "
+          to={PAGE.CREATE}
+          title="test"
+        >
+          Create new user
+        </Link>
+        <Link
+          className="py-2 px-3 bg-cyan-400 rounded-sm "
+          to={PAGE.LIST_FILE}
+          title="test"
+        >
+          List File
+        </Link>
+      </div>
       <table className="table-auto">
         <thead>
           <tr>

@@ -3,6 +3,7 @@ import { PAGE } from "../config/constants";
 import AuthLayout from "../layouts/AuthLayout";
 import MainLayout from "../layouts/MainLayout";
 import CreateContainer from "../pages/Create/CreateContainer";
+import ListFileContainer from "../pages/File/ListFileContainer";
 import HomeContainer from "../pages/Home/HomeContainer";
 import LoginContainer from "../pages/Login/LoginContainer";
 import UpdateContainer from "../pages/Update/UpdateContainer";
@@ -31,6 +32,10 @@ export default createBrowserRouter([
       {
         element: <CreateContainer />,
         path: `${PAGE.CREATE}`,
+      },
+      {
+        element: <ListFileContainer />,
+        path: `${PAGE.LIST_FILE}`,
       },
     ],
   },
