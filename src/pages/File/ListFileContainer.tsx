@@ -4,7 +4,6 @@ import ListFile from "./ListFile";
 import FormUpLoadFile from "@components/FormUploadFile";
 import axiosFile from "../../axios/axiosFile";
 import { useTranslation } from "react-i18next";
-import { useSort } from "../../hooks/useSort";
 import { useSearch } from "../../hooks/useSearch";
 import { usePaginate } from "../../hooks/usePaginate";
 import { useCallback, useEffect, useState } from "react";
@@ -13,7 +12,7 @@ import { Input } from "@material-tailwind/react";
 import { FileFormat } from "@models/FileFormat";
 import { File } from "@models/File";
 import { createLinkDownload } from "../../utils/createLinkDownload";
-import { API, SORT_FILE } from "../../config/constants";
+import { API } from "../../config/constants";
 import { AiOutlineSearch } from "react-icons/ai";
 
 const ListFileContainer = () => {
@@ -22,7 +21,6 @@ const ListFileContainer = () => {
   const [listFileFormat, setListFileFormat] = useState<FileFormat[]>();
   const [sortFormat, setSortFormat] = useState<number>();
   const [selectedFile, setSelectedFile] = useState<Blob>();
-  const [sort, setSort, colSort, setColSort] = useSort<string>("");
   const [handleSelectedPage, setPaginateInfo, pageCount, nextPage] =
     usePaginate();
   const { t } = useTranslation();
@@ -32,8 +30,6 @@ const ListFileContainer = () => {
       const res = await axiosFile.get(`${API.LIST_FILE}?page=${nextPage}`, {
         params: {
           search: delaySearch,
-          sort,
-          sort_by: colSort,
           format_id: sortFormat,
         },
       });
@@ -63,7 +59,7 @@ const ListFileContainer = () => {
 
   useEffect(() => {
     handleGetFile();
-  }, [delaySearch, nextPage, sort, sortFormat]);
+  }, [delaySearch, nextPage, sortFormat]);
 
   useEffect(() => {
     (async () => {
@@ -137,14 +133,6 @@ const ListFileContainer = () => {
     },
     [selectedFile]
   );
-
-  const handleSetSort = (colName: string) => {
-    setColSort(colName);
-    setSort((prev) =>
-      prev === SORT_FILE.DOWN ? SORT_FILE.UP : SORT_FILE.DOWN
-    );
-  };
-
   const handleSortFormat = (e?: string) => {
     if (e) setSortFormat(+e);
   };
@@ -173,9 +161,6 @@ const ListFileContainer = () => {
         </div>
       </div>
       <ListFile
-        handleSetSort={handleSetSort}
-        sort={sort}
-        colSort={colSort}
         pageCount={pageCount}
         handleChangePage={handleChangePage}
         handleDowLoadFile={handleDowLoadFile}
