@@ -3,6 +3,7 @@ import { TfiPencil } from "react-icons/tfi";
 import { PAGE } from "../../config/constants";
 import { Link } from "react-router-dom";
 import { BsTrash3 } from "react-icons/bs";
+import ButtonLink from "@components/ButtonLink";
 interface HomeProps {
   users: User[];
   handleDelete: (id: number) => void;
@@ -15,20 +16,8 @@ const Home = ({ users, handleDelete }: HomeProps) => {
   return (
     <div className="overflow-x-auto">
       <div className="flex gap-x-4 my-2 items-center">
-        <Link
-          className="py-2 px-3 bg-cyan-400 rounded-sm "
-          to={PAGE.CREATE}
-          title="test"
-        >
-          Create new user
-        </Link>
-        <Link
-          className="py-2 px-3 bg-cyan-400 rounded-sm "
-          to={PAGE.LIST_FILE}
-          title="test"
-        >
-          List File
-        </Link>
+        <ButtonLink to={PAGE.CREATE}>Create new user</ButtonLink>
+        <ButtonLink to={PAGE.LIST_FILE}> List File</ButtonLink>
       </div>
       <table className="table-auto">
         <thead>

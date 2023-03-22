@@ -14,7 +14,7 @@ const AuthLayout = () => {
   return (
     <Suspense fallback={<Loading />}>
       <div className="flex items-center justify-center h-screen">
-        <div className="p-3 rounded-sm shadow-xl w-2/4  md:w-1/4">
+        <div className="p-3 rounded-sm shadow-xl">
           <Outlet />
         </div>
       </div>

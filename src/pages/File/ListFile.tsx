@@ -1,5 +1,4 @@
 import ReactPaginate from "react-paginate";
-import Heading from "@components/Heading";
 import {
   AiFillCaretDown,
   AiFillCaretUp,
@@ -9,7 +8,7 @@ import { formatBytes } from "../../utils/formatBytes";
 import { FORMAT_SIZE_FILE, SORT_FILE } from "../../config/constants";
 import { File } from "@models/File";
 import { BsTrash3 } from "react-icons/bs";
-
+import { Typography } from "@material-tailwind/react";
 interface ListFilePropsType {
   files: File[];
   handleChangePage: (selectedPage: { selected: number }) => void;
@@ -38,7 +37,9 @@ const ListFile = ({
 }: ListFilePropsType) => {
   return (
     <div className="p-5 h-full min-h-screen">
-      <Heading className="text-white">List File</Heading>
+      <Typography variant="h2" className="text-white text-center">
+        List File
+      </Typography>
       <div className=" flex justify-center mt-10 text-white">
         <table className="table-auto">
           <thead>

@@ -1,18 +1,20 @@
 import Swal from "sweetalert2";
+import SelectChange from "@components/SelectChange";
 import ListFile from "./ListFile";
-import InputSearch from "@components/InputSearch";
-import Button from "@components/Button";
+import FormUpLoadFile from "@components/FormUploadFile";
 import axiosFile from "../../axios/axiosFile";
 import { useTranslation } from "react-i18next";
+import { useSort } from "../../hooks/useSort";
+import { useSearch } from "../../hooks/useSearch";
+import { usePaginate } from "../../hooks/usePaginate";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import { File } from "@models/File";
-import { API, SORT_FILE } from "../../config/constants";
-import { useSort } from "../../hooks/useSort";
-import { createLinkDownload } from "../../utils/createLinkDownload";
+import { Input } from "@material-tailwind/react";
 import { FileFormat } from "@models/FileFormat";
-import { usePaginate } from "../../hooks/usePaginate";
-import { useSearch } from "../../hooks/useSearch";
+import { File } from "@models/File";
+import { createLinkDownload } from "../../utils/createLinkDownload";
+import { API, SORT_FILE } from "../../config/constants";
+import { AiOutlineSearch } from "react-icons/ai";
 
 const ListFileContainer = () => {
   const [setSearch, delaySearch] = useSearch();
@@ -143,30 +145,32 @@ const ListFileContainer = () => {
     );
   };
 
-  const handleSortFormat = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setSortFormat(+e.target.value);
+  const handleSortFormat = (e?: string) => {
+    if (e) setSortFormat(+e);
   };
   return (
     <div className="bg-primary p-5">
       <div className="text-white flex items-center justify-between">
-        <InputSearch handleSearch={handleSearch} />
-        <form onSubmit={(e) => handleUploadFile(e)}>
-          <input type="file" onChange={(e) => handleChooseFile(e)} />
-          <Button>Upload</Button>
-        </form>
-        <select
-          id="select-format"
-          className="text-primary outline-none"
-          onChange={(e) => handleSortFormat(e)}
-        >
-          <option value="">All</option>
-          {listFileFormat &&
-            listFileFormat.map((fileFormat) => (
-              <option key={fileFormat.id} value={fileFormat.id}>
-                {fileFormat.name}
-              </option>
-            ))}
-        </select>
+        <div className="w-72">
+          <Input
+            onChange={handleSearch}
+            label="Search"
+            className="text-white"
+            icon={<AiOutlineSearch />}
+          />
+        </div>
+        <FormUpLoadFile
+          onSubmit={handleUploadFile}
+          onChange={handleChooseFile}
+        />
+        <div className="m-w-72">
+          {listFileFormat && (
+            <SelectChange
+              handleSortFormat={handleSortFormat}
+              listFileFormat={listFileFormat}
+            />
+          )}
+        </div>
       </div>
       <ListFile
         handleSetSort={handleSetSort}

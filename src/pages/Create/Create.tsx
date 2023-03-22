@@ -1,6 +1,7 @@
 import OneField from "../../components/OneField";
 import InputValidate from "../../components/InputValidate";
-import Button from "../../components/Button";
+import { Button } from "@material-tailwind/react";
+import { BsPersonAdd } from "react-icons/bs";
 const Create = () => {
   return (
     <>
@@ -28,7 +29,9 @@ const Create = () => {
         </label>
         <InputValidate name="email" type="email" placeholder="Email" />
       </OneField>
-      <Button>Create</Button>
+      <Button className="flex items-center gap-x-2">
+        <BsPersonAdd /> Create
+      </Button>
     </>
   );
 };
