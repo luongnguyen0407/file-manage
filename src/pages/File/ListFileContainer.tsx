@@ -9,7 +9,7 @@ import { toast } from "react-toastify";
 import { File } from "@models/File";
 import { API, SORT_FILE } from "../../config/constants";
 import { useSort } from "../../hooks/useSort";
-import { handleDownloadFile } from "../../utils/handleDownloadFile";
+import { createLinkDownload } from "../../utils/createLinkDownload";
 import { FileFormat } from "@models/FileFormat";
 import { usePaginate } from "../../hooks/usePaginate";
 import { useSearch } from "../../hooks/useSearch";
@@ -82,7 +82,7 @@ const ListFileContainer = () => {
       const res = await axiosFile.get(`${API.DOWN_FILE}/${id}`, {
         responseType: "blob",
       });
-      handleDownloadFile(res, file);
+      createLinkDownload(res, file);
     } catch (error) {
       toast.error(t("server.error"));
     }
