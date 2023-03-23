@@ -42,12 +42,10 @@ const ListFile = ({
       {
         name: "File Format",
         selector: (row) => row.format,
-        sortable: true,
       },
       {
         name: "First Size",
         selector: (row) => formatBytes(row.file_size, FORMAT_SIZE_FILE.KB),
-        sortable: true,
       },
       {
         name: "Upload At",
