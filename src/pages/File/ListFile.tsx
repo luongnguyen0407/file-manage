@@ -1,5 +1,8 @@
 import ReactPaginate from "react-paginate";
-import DataTable, { TableColumn } from "react-data-table-component";
+import DataTable, {
+  SortFunction,
+  TableColumn,
+} from "react-data-table-component";
 import { useMemo } from "react";
 import { Typography } from "@material-tailwind/react";
 import { formatBytes } from "../../utils/formatBytes";
@@ -7,11 +10,13 @@ import { FORMAT_SIZE_FILE } from "../../config/constants";
 import { File } from "@models/File";
 import { BsTrash3 } from "react-icons/bs";
 import { AiOutlineCloudDownload } from "react-icons/ai";
+import { handleSortType } from "@models/FileFormat";
 interface ListFilePropsType {
   files: File[];
   handleChangePage: (selectedPage: { selected: number }) => void;
   handleDeleteFile: (id: number) => void;
   pageCount: number;
+  handleSort: handleSortType<File>;
   handleDowLoadFile: (file: File) => void;
 }
 const ListFile = ({
@@ -20,17 +25,23 @@ const ListFile = ({
   pageCount,
   handleDowLoadFile,
   handleDeleteFile,
+  handleSort,
 }: ListFilePropsType) => {
   const columns: TableColumn<File>[] = useMemo(
     () => [
       {
         name: "ID",
         selector: (row) => row.id,
-        sortable: true,
       },
       {
         name: "File Name",
         selector: (row) => row.file_name,
+        sortable: true,
+        sortField: "file_name",
+      },
+      {
+        name: "File Format",
+        selector: (row) => row.format,
         sortable: true,
       },
       {
@@ -42,6 +53,7 @@ const ListFile = ({
         name: "Upload At",
         selector: (row) => row.upload_at,
         sortable: true,
+        sortField: "upload_at",
       },
       {
         name: "Action",
@@ -69,7 +81,14 @@ const ListFile = ({
         List File
       </Typography>
       <div className=" flex justify-center mt-10 text-white">
-        {files && <DataTable columns={columns} data={files} />}
+        {files && (
+          <DataTable
+            columns={columns}
+            data={files}
+            onSort={handleSort}
+            sortServer
+          />
+        )}
       </div>
       <div>
         <ReactPaginate

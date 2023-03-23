@@ -8,8 +8,8 @@ import { useSearch } from "../../hooks/useSearch";
 import { usePaginate } from "../../hooks/usePaginate";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import { Input } from "@material-tailwind/react";
-import { FileFormat } from "@models/FileFormat";
+import { Input, Option, Select } from "@material-tailwind/react";
+import { FileFormat, handleSortType } from "@models/FileFormat";
 import { File } from "@models/File";
 import { createLinkDownload } from "../../utils/createLinkDownload";
 import { API } from "../../config/constants";
@@ -20,6 +20,9 @@ const ListFileContainer = () => {
   const [file, setFile] = useState<File[]>([]);
   const [listFileFormat, setListFileFormat] = useState<FileFormat[]>();
   const [sortFormat, setSortFormat] = useState<number>();
+  const [sortBy, setSortBy] = useState("");
+  const [limit, setLimit] = useState(10);
+  const [sortDir, setSortDir] = useState("");
   const [selectedFile, setSelectedFile] = useState<Blob>();
   const [handleSelectedPage, setPaginateInfo, pageCount, nextPage] =
     usePaginate();
@@ -31,6 +34,9 @@ const ListFileContainer = () => {
         params: {
           search: delaySearch,
           format_id: sortFormat,
+          sort_by: sortBy,
+          sort: sortDir,
+          limit,
         },
       });
       const { files, ...prev } = res.data;
@@ -57,9 +63,14 @@ const ListFileContainer = () => {
     }
   };
 
+  const handleSort: handleSortType<File> = (selectedColumn, sortDirection) => {
+    const sortName = selectedColumn.sortField;
+    setSortBy(sortName as string);
+    setSortDir(sortDirection);
+  };
   useEffect(() => {
     handleGetFile();
-  }, [delaySearch, nextPage, sortFormat]);
+  }, [delaySearch, nextPage, sortFormat, sortBy, sortDir, limit]);
 
   useEffect(() => {
     (async () => {
@@ -136,6 +147,9 @@ const ListFileContainer = () => {
   const handleSortFormat = (e?: string) => {
     if (e) setSortFormat(+e);
   };
+  const handleSetLimit = (e?: string) => {
+    if (e) setLimit(+e);
+  };
   return (
     <div className="bg-primary p-5">
       <div className="text-white flex items-center justify-between">
@@ -159,8 +173,21 @@ const ListFileContainer = () => {
             />
           )}
         </div>
+        <div className="m-w-72">
+          <Select
+            label="Limit"
+            className="text-white"
+            onChange={handleSetLimit}
+          >
+            <Option value="1">1</Option>
+            <Option value="10">10</Option>
+            <Option value="20">20</Option>
+            <Option value="30">30</Option>
+          </Select>
+        </div>
       </div>
       <ListFile
+        handleSort={handleSort}
         pageCount={pageCount}
         handleChangePage={handleChangePage}
         handleDowLoadFile={handleDowLoadFile}
