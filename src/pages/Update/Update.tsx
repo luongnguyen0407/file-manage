@@ -1,4 +1,4 @@
-import Button from "../../components/Button";
+import { Button } from "@material-tailwind/react";
 import InputValidate from "../../components/InputValidate";
 import OneField from "../../components/OneField";
 const Update = () => {

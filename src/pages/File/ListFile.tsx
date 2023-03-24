@@ -1,30 +1,23 @@
 import ReactPaginate from "react-paginate";
-import Heading from "@components/Heading";
-import {
-  AiFillCaretDown,
-  AiFillCaretUp,
-  AiOutlineCloudDownload,
-} from "react-icons/ai";
+import DataTable, {
+  SortFunction,
+  TableColumn,
+} from "react-data-table-component";
+import { useMemo } from "react";
+import { Typography } from "@material-tailwind/react";
 import { formatBytes } from "../../utils/formatBytes";
-import { FORMAT_SIZE_FILE, SORT_FILE } from "../../config/constants";
+import { FORMAT_SIZE_FILE } from "../../config/constants";
 import { File } from "@models/File";
 import { BsTrash3 } from "react-icons/bs";
-
+import { AiOutlineCloudDownload } from "react-icons/ai";
+import { handleSortType } from "@models/FileFormat";
 interface ListFilePropsType {
   files: File[];
   handleChangePage: (selectedPage: { selected: number }) => void;
   handleDeleteFile: (id: number) => void;
   pageCount: number;
-  colSort?: string;
-  sort: string;
+  handleSort: handleSortType<File>;
   handleDowLoadFile: (file: File) => void;
-  handleSetSort: (colName: string) => void;
-}
-interface ListItemPropsType {
-  file: File;
-  index: number;
-  onDownload: () => void;
-  onDelete: () => void;
 }
 const ListFile = ({
   files,
@@ -32,58 +25,68 @@ const ListFile = ({
   pageCount,
   handleDowLoadFile,
   handleDeleteFile,
-  handleSetSort,
-  sort,
-  colSort,
+  handleSort,
 }: ListFilePropsType) => {
+  const columns: TableColumn<File>[] = useMemo(
+    () => [
+      {
+        name: "ID",
+        selector: (row) => row.id,
+      },
+      {
+        name: "File Name",
+        selector: (row) => row.file_name,
+        sortable: true,
+        sortField: "file_name",
+      },
+      {
+        name: "File Format",
+        selector: (row) => row.format,
+      },
+      {
+        name: "First Size",
+        selector: (row) => formatBytes(row.file_size, FORMAT_SIZE_FILE.KB),
+      },
+      {
+        name: "Upload At",
+        selector: (row) => row.upload_at,
+        sortable: true,
+        sortField: "upload_at",
+      },
+      {
+        name: "Action",
+        cell: (row) => (
+          <div className="flex items-center justify-between gap-2">
+            <button
+              onClick={() => handleDeleteFile(row.id)}
+              data-testid="delete-item"
+            >
+              <BsTrash3 className="cursor-pointer text-red-400" />
+            </button>
+            <AiOutlineCloudDownload
+              onClick={() => handleDowLoadFile(row)}
+              className="cursor-pointer text-green-400"
+            />
+          </div>
+        ),
+      },
+    ],
+    []
+  );
   return (
     <div className="p-5 h-full min-h-screen">
-      <Heading className="text-white">List File</Heading>
+      <Typography variant="h2" className="text-white text-center">
+        List File
+      </Typography>
       <div className=" flex justify-center mt-10 text-white">
-        <table className="table-auto">
-          <thead>
-            <tr>
-              <th className="px-4 py-2">ID</th>
-              <th
-                className="px-4 py-2 flex items-center cursor-pointer"
-                onClick={() => handleSetSort("file_name")}
-              >
-                File Name
-                {sort === SORT_FILE.UP && colSort === "file_name" ? (
-                  <AiFillCaretUp />
-                ) : (
-                  <AiFillCaretDown />
-                )}
-              </th>
-              <th className="px-4 py-2">File Size</th>
-              <th className="px-4 py-2">File Format</th>
-              <th
-                className="px-4 py-2 flex items-center cursor-pointer"
-                onClick={() => handleSetSort("upload_at")}
-              >
-                Upload At
-                {sort === SORT_FILE.UP && colSort === "upload_at" ? (
-                  <AiFillCaretUp />
-                ) : (
-                  <AiFillCaretDown />
-                )}
-              </th>
-              <th className="px-4 py-2">Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {files &&
-              files.map((file, index) => (
-                <ListItem
-                  index={index}
-                  file={file}
-                  key={file.id}
-                  onDownload={() => handleDowLoadFile(file)}
-                  onDelete={() => handleDeleteFile(file.id)}
-                />
-              ))}
-          </tbody>
-        </table>
+        {files && (
+          <DataTable
+            columns={columns}
+            data={files}
+            onSort={handleSort}
+            sortServer
+          />
+        )}
       </div>
       <div>
         <ReactPaginate
@@ -99,34 +102,6 @@ const ListFile = ({
         />
       </div>
     </div>
-  );
-};
-
-const ListItem = ({ file, index, onDownload, onDelete }: ListItemPropsType) => {
-  return (
-    <tr data-testid="list-item" className="">
-      <td className="border border-indigo-400 px-4 py-2">{index + 1}</td>
-      <td className="border border-indigo-400 px-4 py-2">{file.file_name}</td>
-      <td className="border border-indigo-400 px-4 py-2">
-        {formatBytes(file.file_size, FORMAT_SIZE_FILE.KB)}
-      </td>
-      <td className="border border-indigo-400 px-4 py-2">
-        {file.format.toLowerCase()}
-      </td>
-      <td className="border border-indigo-400 px-4 py-2">{file.upload_at}</td>
-      <td className="border border-indigo-400 px-4 py-2 ">
-        <div className="flex items-center justify-between">
-          <BsTrash3
-            onClick={onDelete}
-            className="cursor-pointer text-red-400"
-          />
-          <AiOutlineCloudDownload
-            onClick={onDownload}
-            className="cursor-pointer text-green-400"
-          />
-        </div>
-      </td>
-    </tr>
   );
 };
 export default ListFile;

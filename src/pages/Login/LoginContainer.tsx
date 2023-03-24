@@ -1,4 +1,3 @@
-import Heading from "../../components/Heading";
 import axiosApi from "../../axios/axiosApi";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -12,6 +11,7 @@ import { lazy, useContext } from "react";
 import { FieldValues } from "react-hook-form/dist/types";
 import { AuthContext } from "../../context/auth-context";
 import { API, LOCAL_STORAGE_KEY, PAGE } from "../../config/constants";
+import { Card, Typography } from "@material-tailwind/react";
 const Login = lazy(() => import("./Login"));
 const LoginContainer = () => {
   const { t } = useTranslation();
@@ -47,12 +47,22 @@ const LoginContainer = () => {
   };
   return (
     <>
-      <Heading>Login</Heading>
-      <FormProvider {...methods}>
-        <form onSubmit={handleSubmit(handleSubmitLogin)} className="mt-3">
-          <Login />
-        </form>
-      </FormProvider>
+      <Card color="transparent" shadow={false}>
+        <Typography variant="h4" color="blue-gray">
+          Login
+        </Typography>
+        <Typography color="gray" className="mt-1 font-normal">
+          Enter your details to Login.
+        </Typography>
+        <FormProvider {...methods}>
+          <form
+            onSubmit={handleSubmit(handleSubmitLogin)}
+            className="mt-8 mb-2 w-80 max-w-screen-lg sm:w-96"
+          >
+            <Login />
+          </form>
+        </FormProvider>
+      </Card>
     </>
   );
 };

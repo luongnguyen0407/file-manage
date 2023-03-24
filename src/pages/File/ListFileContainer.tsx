@@ -1,26 +1,29 @@
 import Swal from "sweetalert2";
+import SelectChange from "@components/SelectChange";
 import ListFile from "./ListFile";
-import InputSearch from "@components/InputSearch";
-import Button from "@components/Button";
+import FormUpLoadFile from "@components/FormUploadFile";
 import axiosFile from "../../axios/axiosFile";
 import { useTranslation } from "react-i18next";
+import { useSearch } from "../../hooks/useSearch";
+import { usePaginate } from "../../hooks/usePaginate";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "react-toastify";
+import { Input, Option, Select } from "@material-tailwind/react";
+import { FileFormat, handleSortType } from "@models/FileFormat";
 import { File } from "@models/File";
-import { API, SORT_FILE } from "../../config/constants";
-import { useSort } from "../../hooks/useSort";
 import { createLinkDownload } from "../../utils/createLinkDownload";
-import { FileFormat } from "@models/FileFormat";
-import { usePaginate } from "../../hooks/usePaginate";
-import { useSearch } from "../../hooks/useSearch";
+import { API } from "../../config/constants";
+import { AiOutlineSearch } from "react-icons/ai";
 
 const ListFileContainer = () => {
   const [setSearch, delaySearch] = useSearch();
   const [file, setFile] = useState<File[]>([]);
   const [listFileFormat, setListFileFormat] = useState<FileFormat[]>();
   const [sortFormat, setSortFormat] = useState<number>();
+  const [sortBy, setSortBy] = useState("");
+  const [limit, setLimit] = useState(10);
+  const [sortDir, setSortDir] = useState("");
   const [selectedFile, setSelectedFile] = useState<Blob>();
-  const [sort, setSort, colSort, setColSort] = useSort<string>("");
   const [handleSelectedPage, setPaginateInfo, pageCount, nextPage] =
     usePaginate();
   const { t } = useTranslation();
@@ -30,9 +33,10 @@ const ListFileContainer = () => {
       const res = await axiosFile.get(`${API.LIST_FILE}?page=${nextPage}`, {
         params: {
           search: delaySearch,
-          sort,
-          sort_by: colSort,
           format_id: sortFormat,
+          sort_by: sortBy,
+          sort: sortDir,
+          limit,
         },
       });
       const { files, ...prev } = res.data;
@@ -59,9 +63,14 @@ const ListFileContainer = () => {
     }
   };
 
+  const handleSort: handleSortType<File> = (selectedColumn, sortDirection) => {
+    const sortName = selectedColumn.sortField;
+    setSortBy(sortName as string);
+    setSortDir(sortDirection);
+  };
   useEffect(() => {
     handleGetFile();
-  }, [delaySearch, nextPage, sort, sortFormat]);
+  }, [delaySearch, nextPage, sortFormat, sortBy, sortDir, limit]);
 
   useEffect(() => {
     (async () => {
@@ -135,43 +144,50 @@ const ListFileContainer = () => {
     },
     [selectedFile]
   );
-
-  const handleSetSort = (colName: string) => {
-    setColSort(colName);
-    setSort((prev) =>
-      prev === SORT_FILE.DOWN ? SORT_FILE.UP : SORT_FILE.DOWN
-    );
+  const handleSortFormat = (e?: string) => {
+    if (e) setSortFormat(+e);
   };
-
-  const handleSortFormat = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setSortFormat(+e.target.value);
+  const handleSetLimit = (e?: string) => {
+    if (e) setLimit(+e);
   };
   return (
     <div className="bg-primary p-5">
       <div className="text-white flex items-center justify-between">
-        <InputSearch handleSearch={handleSearch} />
-        <form onSubmit={(e) => handleUploadFile(e)}>
-          <input type="file" onChange={(e) => handleChooseFile(e)} />
-          <Button>Upload</Button>
-        </form>
-        <select
-          id="select-format"
-          className="text-primary outline-none"
-          onChange={(e) => handleSortFormat(e)}
-        >
-          <option value="">All</option>
-          {listFileFormat &&
-            listFileFormat.map((fileFormat) => (
-              <option key={fileFormat.id} value={fileFormat.id}>
-                {fileFormat.name}
-              </option>
-            ))}
-        </select>
+        <div className="w-72">
+          <Input
+            onChange={handleSearch}
+            label="Search"
+            className="text-white"
+            icon={<AiOutlineSearch />}
+          />
+        </div>
+        <FormUpLoadFile
+          onSubmit={handleUploadFile}
+          onChange={handleChooseFile}
+        />
+        <div className="m-w-72">
+          {listFileFormat && (
+            <SelectChange
+              handleSortFormat={handleSortFormat}
+              listFileFormat={listFileFormat}
+            />
+          )}
+        </div>
+        <div className="m-w-72">
+          <Select
+            label="Limit"
+            className="text-white"
+            onChange={handleSetLimit}
+          >
+            <Option value="1">1</Option>
+            <Option value="10">10</Option>
+            <Option value="20">20</Option>
+            <Option value="30">30</Option>
+          </Select>
+        </div>
       </div>
       <ListFile
-        handleSetSort={handleSetSort}
-        sort={sort}
-        colSort={colSort}
+        handleSort={handleSort}
         pageCount={pageCount}
         handleChangePage={handleChangePage}
         handleDowLoadFile={handleDowLoadFile}
